@@ -1,0 +1,6 @@
+people:
+  - name: A
+    speed: 1
+
+  - name: B
+    speed: 2

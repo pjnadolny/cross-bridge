@@ -1,0 +1,15 @@
+people:
+  - name: A
+    speed: 1
+
+  - name: B
+    speed: 20
+
+  - name: C
+    speed: 10
+
+  - name: D
+    speed: 10
+
+  - name: E
+    speed: 15
