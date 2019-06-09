@@ -136,7 +136,7 @@ class Arguments
 {
   public:
     bool help;
-		bool abort;
+    bool abort;
     std::string progName;
     std::string peopleFilename;
 
@@ -148,65 +148,65 @@ class Arguments
     {
     }
 
-		void printHelp()
-		{
-			std::cout << "Usage: " << progName << " --people <filename> [--help]" << std::endl;
-		} // end Arguments::printHelp()
+  void printHelp()
+  {
+    std::cout << "Usage: " << progName << " --people <filename> [--help]" << std::endl;
+  } // end Arguments::printHelp()
 
-    // -----------------------------------------------------------------------
-    void getArgs(int argc, char * argv[])
+  // -----------------------------------------------------------------------
+  void getArgs(int argc, char * argv[])
+  {
+    const char * shortopts = "h";
+    struct option longopts[] =
     {
-      const char * shortopts = "h";
-      struct option longopts[] =
+      // { const char* name, int has_arg, int* flag, int val }
+      // Here is how to set a flag
+      //{"verbose", no_argument,       &verbose_flag, 1},
+      //{"brief",   no_argument,       &verbose_flag, 0},
+
+      {"people",       required_argument, nullptr, 'p'},
+      {"help",         no_argument,       nullptr, 'h'},
+      {nullptr,        0,                 nullptr, 0  }
+    };
+    int longoptsindex = 0;
+    int opt;
+    //opterr = 0; // supress error message from getopt_long
+
+    optargStream.str(argv[0]);
+    optargStream >> progName;
+
+    if (DEBUG==1)
+    {
+      int i;
+      for (i=0; i<argc; i++)
       {
-				// { const char* name, int has_arg, int* flag, int val }
-				// Here is how to set a flag
-				//{"verbose", no_argument,       &verbose_flag, 1},
-				//{"brief",   no_argument,       &verbose_flag, 0},
+        std::cout << "Arg " << i << ": " << argv[i] << std::endl;
+      }
+    }
 
-      	{"people",       required_argument, nullptr, 'p'},
-				{"help",         no_argument,       nullptr, 'h'},
-				{nullptr,        0,                 nullptr, 0  }
-      };
-      int longoptsindex = 0;
-      int opt;
-      //opterr = 0; // supress error message from getopt_long
+    // GNU getopt_long() side effects: optarg, optind, opterr, optopt
+    // Note: it returns 0 if it set a flag
+    opt = getopt_long(argc, argv, shortopts, longopts, &longoptsindex);
 
-			optargStream.str(argv[0]);
-			optargStream >> progName;
+    while (opt != -1)
+    {
+      optargStream.clear();
 
-			if (DEBUG==1)
-			{
-      	int i;
-      	for (i=0; i<argc; i++)
-      		{
-						std::cout << "Arg " << i << ": " << argv[i] << std::endl;
-      		}
-			}
-
-			// GNU getopt_long() side effects: optarg, optind, opterr, optopt
-			// Note: it returns 0 if it set a flag
-			opt = getopt_long(argc, argv, shortopts, longopts, &longoptsindex);
-
-			while (opt != -1)
-			{
-				optargStream.clear();
-
-			  switch (opt)
-			  {
-			  case 0:
-			    // If this option set a flag, do nothing else now.
-			    if (longopts[longoptsindex].flag != 0)
-			    {
-			      break;
-			    }
-			    std::cout << "option " << longopts[longoptsindex].name;
-			    if (optarg)
-			    {
-			      std::cout << " with arg " << optarg;
-			    }
-			    std::cout << std::endl;
-			    break;
+      switch (opt)
+      {
+        case 0:
+          // If this option set a flag, do nothing else now.
+         if (longopts[longoptsindex].flag != 0)
+         {
+           break;
+         }
+         std::cout << "option " << longopts[longoptsindex].name;
+         if (optarg)
+         {
+           std::cout << " with arg " << optarg;
+         }
+         std::cout << std::endl;
+         break;
 
         case 'p':
           if (DEBUG==1) { std::cout << "option --poeple with value " << optarg << std::endl; }
@@ -214,45 +214,45 @@ class Arguments
           optargStream >> peopleFilename;
           break;
 
-			  case 'h':
-					if (DEBUG==1) { std::cout << "option --help" << std::endl; }
-					help = true;
-					abort = true;
-					break;
+        case 'h':
+          if (DEBUG==1) { std::cout << "option --help" << std::endl; }
+          help = true;
+          abort = true;
+          break;
 
-				case '?':
-					// getopt_long already printed an error message.
-					abort = true;
-			    break;
+        case '?':
+          // getopt_long already printed an error message.
+          abort = true;
+          break;
 
-			  case ':':
-			    // getopt_long already printed an error message.
-					abort = true;
-			    break;
+        case ':':
+          // getopt_long already printed an error message.
+          abort = true;
+          break;
 
-			  default:
-			    std::cout << "Unexpected option: " << opt << std::endl;
-			  } // end switch
+        default:
+          std::cout << "Unexpected option: " << opt << std::endl;
+      } // end switch
 
-				opt = getopt_long(argc, argv, shortopts, longopts, &longoptsindex);
+      opt = getopt_long(argc, argv, shortopts, longopts, &longoptsindex);
 
-			} // end while
+    } // end while
 
-			// Process any remaining command line arguments (not options)
-			if (optind < argc)
-			{
-				abort = true;
-	    	std::cout << "Error: unrecognized arguments: ";
-				int i = optind;
-		    while (i < argc)
-		    {
-		      std::cout << argv[i] << " ";
-					i++;
-		    }
-		    std::cout << std::endl;
-			}
+    // Process any remaining command line arguments (not options)
+    if (optind < argc)
+    {
+      abort = true;
+      std::cout << "Error: unrecognized arguments: ";
+      int i = optind;
+      while (i < argc)
+      {
+        std::cout << argv[i] << " ";
+        i++;
+      }
+      std::cout << std::endl;
+    }
 
-    } // end Arguments::getArgs()
+  } // end Arguments::getArgs()
 
 }; // end class Arguments
 
@@ -566,14 +566,14 @@ int main(int argc, char * argv[]) {
 
   Arguments args;
   args.getArgs(argc, argv);
-	if (args.help)
-	{
-		args.printHelp();
-	}
-	if (args.abort)
-	{
-		return 0;
-	}
+  if (args.help)
+  {
+    args.printHelp();
+  }
+  if (args.abort)
+  {
+    return 0;
+  }
   if (args.peopleFilename == "")
   {
     std::cout << args.progName << ": ERROR: Missing option peopleFile" << std::endl;
